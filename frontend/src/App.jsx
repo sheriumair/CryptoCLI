@@ -86,13 +86,13 @@ export default function App(){
     };
 
 
-    const handleDrawCommand = (file, columns) => {
+    const handleDrawCommand = async (file, columns) => {
        console.log(file)
        console.log(columns)
     
        try {
         // Make an API request to fetch data from the backend
-        const response = axios.get(`http://localhost:8080/draw?file=${file}&columns=${columns}`);
+        const response = await axios.get(`http://localhost:8080/draw?file=${file}&columns=${columns}`);
         
         if (response.status === 200) {
           const data = response.data; // Assuming the backend returns the data in a suitable format
@@ -107,25 +107,6 @@ export default function App(){
         console.error('Error: Unable to connect to the backend', error);
       }
 
-
-      /*const fs = require('fs');
-      const csv = require('csv-parser');
-    
-      const data = [];
-    
-      // Read the CSV file
-      fs.createReadStream(file)
-        .pipe(csv())
-        .on('data', (row) => {
-          data.push(row);
-        })
-        .on('end', () => {
-          // Now 'data' contains the CSV data, and you can draw a chart with it
-          console.log('Read data from CSV file:', data);
-    
-          // Your Recharts drawing logic can go here
-          // You would typically use the 'data' variable to draw the chart
-        });*/
     };
 
 

@@ -1,69 +1,71 @@
 package handlers
 
 import (
-	"encoding/csv"
-	"fmt"
-	"net/http"
-	"os"
+    "encoding/csv"
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+    "strings"
 )
 
 func HandleDrawCommand(w http.ResponseWriter, r *http.Request) {
-	// Parse query parameters
-	fileName := r.URL.Query().Get("file")
-	//columnsParam := r.URL.Query().Get("columns")
-	//columnNames := strings.Split(columnsParam, ",")
-	fmt.Println(fileName)
-	filePath := "../uploads/" + fileName
-	fmt.Println(filePath)
-	// Open the CSV file
-	file, err := os.Open(filePath)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to open file: %s", err.Error()), http.StatusInternalServerError)
-		return
-	}
-	defer file.Close()
+    // Parse query parameters
+    fileName := r.URL.Query().Get("file")
+    columnsParam := r.URL.Query().Get("columns")
+    columnNames := strings.Split(columnsParam, ",")
+    fmt.Println(fileName)
+    filePath := "../uploads/" + fileName
+    fmt.Println(filePath)
 
-	// Parse the CSV data
-	fileReader := csv.NewReader(file)
-	fileReader.Comma = ',' // Set the comma as the delimiter
-	fileReader.LazyQuotes = false
-	records, error := fileReader.ReadAll()
+    // Open the CSV file
+    file, err := os.Open(filePath)
+    if err != nil {
+        http.Error(w, fmt.Sprintf("Failed to open file: %s", err.Error()), http.StatusInternalServerError)
+        return
+    }
+    defer file.Close()
 
-	if error != nil {
-		fmt.Println(error)
-	}
+    // Parse the CSV data
+    fileReader := csv.NewReader(file)
+    fileReader.LazyQuotes = true
+    records, err := fileReader.ReadAll()
 
-	fmt.Println(records)
+    if err != nil {
+        http.Error(w, fmt.Sprintf("Failed to read CSV data: %s", err.Error()), http.StatusInternalServerError)
+        return
+    }
+    // Create a map to store extracted columns
+    var extractedColumns []map[string]string
+    header := records[0]
+    columnIndices := make(map[string]int)
 
-	/*// Extract specified columns
-	var extractedData []map[string]string
-	header := rows[0]
-	columnIndices := make(map[string]int)
+    // Find the indices of the requested columns in the header
+    for i, colName := range header {
+        for _, requestedCol := range columnNames {
+            if colName == requestedCol {
+                columnIndices[colName] = i
+            }
+        }
+    }
 
-	for i, colName := range header {
-		for _, requestedCol := range columnNames {
-			if colName == requestedCol {
-				columnIndices[colName] = i
-			}
-		}
-	}
+    // Extract the specified columns for each row
+    for _, row := range records[1:] {
+        extractedRow := make(map[string]string)
+        for colName, colIndex := range columnIndices {
+            extractedRow[colName] = row[colIndex]
+        }
+        extractedColumns = append(extractedColumns, extractedRow)
+    }
 
-	for _, row := range rows[1:] {
-		extractedRow := make(map[string]string)
-		for colName, colIndex := range columnIndices {
-			extractedRow[colName] = row[colIndex]
-		}
-		extractedData = append(extractedData, extractedRow)
-	}
 
-	// Send extracted data as JSON response
-	w.Header().Set("Content-Type", "application/json")
-	jsonData, err := json.Marshal(extractedData)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to encode data as JSON: %s", err.Error()), http.StatusInternalServerError)
-		return
-	}
+        w.Header().Set("Content-Type", "application/json")
+        jsonData, err := json.Marshal(extractedColumns)
+        if err != nil {
+            http.Error(w, fmt.Sprintf("Failed to encode data as JSON: %s", err.Error()), http.StatusInternalServerError)
+            return
+        }
+        w.WriteHeader(http.StatusOK)
+        w.Write(jsonData)
 
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonData)*/
 }
