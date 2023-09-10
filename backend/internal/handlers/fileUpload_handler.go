@@ -8,7 +8,6 @@ import (
 )
 
 func HandleUploadCommand(w http.ResponseWriter, r *http.Request) {
-	// Get the file from the request
 	file, fileHeader, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, "Unable to get file from form", http.StatusBadRequest)
@@ -17,24 +16,28 @@ func HandleUploadCommand(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	originalFilename := fileHeader.Filename
-	// Define the destination file path
 	filePath := "../uploads/" + originalFilename
+	uploadDir := "../uploads/"
 
-	// Create the destination file
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		err := os.Mkdir(uploadDir, os.ModePerm)
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, "Failed to create upload directory", http.StatusInternalServerError)
+			return
+		}
+	}
+
 	destinationFile, err := os.Create(filePath)
 	if err != nil {
 		http.Error(w, "Unable to create file", http.StatusInternalServerError)
 		return
 	}
 	defer destinationFile.Close()
-
-	// Write the binary data to the destination file
 	_, err = io.Copy(destinationFile, file)
 	if err != nil {
 		http.Error(w, "Failed to write file data", http.StatusInternalServerError)
 		return
 	}
-
-	// Respond with a success message
 	fmt.Fprintf(w, "File %s uploaded successfully", originalFilename)
 }

@@ -1,190 +1,172 @@
 import './App.css'
-import { useState,useEffect,useRef } from 'react';
+import { useState  ,useEffect , useRef } from 'react';
 import axios from 'axios'; 
-import { ResponsiveContainer,LineChart,Line } from 'recharts';
+import PopUp  from './components/PopUp'
+export default function App() {
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const inputRef = useRef();
+  const [output2, setOutput2] = useState("");
+  const [outputArray, setOutputArray] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+  const openPopup = () => {
+    setIsPopupOpen(true);
+  };
 
-export default function App(){
-  const [input,setInput]=useState("");
-  const [output,setOutput]=useState("");
-  const inputRef=useRef();
-  const fileInputRef = useRef(null);
-
-  useEffect(()=>{
-    inputRef.current.focus() 
-  })
-
-  //Here is ABOUT endpoint function
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
+  const fileInputRef = useRef();
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
   const handleAboutCommand = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/about'); 
-      if (response.status === 200) {
-        const text = response.data; 
-        setOutput(text); 
-      } else {
-        newOutput('Error: Unable to fetch data from the backend');
-      }
+      const response = await axios.get("http://localhost:8080/about");
+      return response.data;
+
     } catch (error) {
-      newOutput('Error: Unable to connect to the backend');
+      return"Error: Unable to connect to the backend";
     }
-  }
+  };
+  const handleHelpCommand = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/help");
+      return response.data;
+    } catch (error) {
+      return"Error: Unable to connect to the backend";
+    }
+  };
+  const handleFetchCommand = async (pair) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/fetch-price/${pair}`
+      );
+      return response.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  };
+  const handleFileUpload = async (e) => {
+    const selectedFile = e.target.files[0];
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+   await axios
+      .post("http://localhost:8080/upload", formData)
+      .then((response) => {
+        setOutput(response.data);
+      })
+      .catch((error) => {
+        setOutput("Error: Unable to upload file");
+      });
+  };
+  const handleDrawCommand = async (file, columns) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/draw?file=${file}&columns=${columns}`
+      );
+      const data = response.data;
+      setOutput2(data)
+      setIsPopupOpen(true);
+      console.log("Received data from the backend:", data);
+      return "Plotted the data";
+ 
+    } catch (error) {
+      console.error("Error: Unable to connect to the backend", error);
+      return error.response.data
+    }
+  };
 
-    //Here is HELP endpoint function
-    const handleHelpCommand = async () => {
-      
-      try {
-        const response = await axios.get('http://localhost:8080/help'); 
-        if (response.status === 200) {
-          const text = response.data; 
-          setOutput(text); 
-        } else {
-          setOutput('Error: Unable to fetch data from the backend');
-        }
-      } catch (error) {
-        setOutput('Error: Unable to connect to the backend');
-      }
+  const handleDeleteCommand = async (fileNameToDelete) => {
+    try {
+      const response = await axios.delete(`http://localhost:8080/delete/${fileNameToDelete}`);
+       return response.data
+    } catch (error) {
+      return error.response.data;
     }
-        //Here is HELP endpoint function
-        const handleFetchCommand = async (pair) => {
-            console.log(pair)
-          try {
-            const response = await axios.get(`http://localhost:8080/fetch-price/${pair}`); 
-            if (response.status === 200) {
-              const text = response.data; 
-              setOutput(text); 
-            } else {
-              setOutput('Error: Unable to fetch data from the backend');
-            }
-          } catch (error) {
-            setOutput('Error: Unable to connect to the backend');
+  };
+  const handleInput = async () => {
+    let newOutput = output + "\n" + "$ " + input + "\n";
+    let response = null;
+    switch (input) {
+      case "about":
+        response = await handleAboutCommand();
+        break;
+      case "clear":
+        newOutput = "";
+        break;
+      case "help":
+        response = await handleHelpCommand();
+        break;
+      case "upload":
+        fileInputRef.current.click();
+        break;
+      default:
+        if (input.startsWith("fetch-price ")) {
+          const pairInput = input.substring(12);
+          response = await handleFetchCommand(pairInput);
+        } else if (input.startsWith("draw")) {
+          const parts = input.split(" ");
+          if (parts.length >= 3) {
+            const file = parts[1];
+            const columns = parts.slice(2).join(" ");
+            const columnArray = columns.split(',');
+            setOutputArray(columnArray)
+            console.log(columnArray[0])
+            response = await handleDrawCommand(file, columns);
+          } else {
+            newOutput += "Invalid usage. Example: draw [file] [columns]";
           }
-        }
-  
-    // Function to fetch data from the backend
-    function fetchCommand()  {
-        <ResponsiveContainer width="100%" aspect={3}>
-          <LineChart>
-
-          </LineChart>
-        </ResponsiveContainer>
-    };
-     //handle UPLOAD
-    const handleFileUpload = (e) => {
-      console.log("INSIDE FILE")
-      const selectedFile = e.target.files[0];
-       const formData = new FormData();
-      formData.append('file', selectedFile);
-  
-      axios
-        .post('http://localhost:8080/upload', formData)
-        .then((response) => {
-          setOutput(response.data); // Handle the response from your backend
-        })
-        .catch((error) => {
-          setOutput('Error: Unable to upload file'); // Handle errors
-        });
-    };
-
-
-    const handleDrawCommand = async (file, columns) => {
-       console.log(file)
-       console.log(columns)
-    
-       try {
-        // Make an API request to fetch data from the backend
-        const response = await axios.get(`http://localhost:8080/draw?file=${file}&columns=${columns}`);
-        
-        if (response.status === 200) {
-          const data = response.data; // Assuming the backend returns the data in a suitable format
-          console.log('Received data from the backend:', data);
-    
-          // Now you can use 'data' to draw your chart using Recharts
-          // Implement your chart drawing logic here
+        }  else if (input.startsWith("delete")) {
+          const fileName = input.substring(7);
+          response = await handleDeleteCommand(fileName);
         } else {
-          console.error('Error: Unable to fetch data from the backend');
+          newOutput += "Invalid Command\n";
         }
-      } catch (error) {
-        console.error('Error: Unable to connect to the backend', error);
-      }
-
-    };
-
-
+    }
+    if (response !== null) {
+      newOutput += response;
+    }
+    setOutput(newOutput);
+    if (input === "clear") {
+      setOutput("");
+    }
+    setInput("");
+  };
+  console.log("out" ,output)
   return (
     <>
-    <div className="App"
-      onClick={e=>{inputRef.current.focus()}}
-      >
-        <h1>Hello WazzzUp</h1>
-      <input 
-      ref={inputRef}
-      type="text"
-      value={input}
-      onChange={e=>setInput(e.target.value)}
-      onKeyDown={async e=>{
-        if(e.key === "Enter"){
-          let newOutput="";
-          newOutput = output + "\n" + "$" + input + "\n"; 
-          switch(input){
-            case "about":
-              //newOutput += "Pinging Backend";
-              handleAboutCommand();
-              break;
-            case "clear":
-              ""
-              break;
-            case "help":
-              handleHelpCommand();f
-              break;
-            /*case "fetch-price":
-              console.log("INSIDE")
-              const pairInput = input.split(' ')[1]; 
-               handleFetchCommand(pairInput);
-               break;*/
-            case "draw":
-              handlefetchCommand();
-              break;
-            case "upload":
-              fileInputRef.current.click()
-              break;            
-            default:
-              if (input.startsWith("fetch-price ")) {
-                const pairInput = input.substring(12); // Remove "fetch-price " from the beginning
-                console.log(pairInput)
-                handleFetchCommand(pairInput);
-              } else if (input.startsWith ("draw")) { // Check for the "draw" command
-                const parts = input.split(' ');
-                if (parts.length >= 3) {
-                  const file = parts[1];
-                  const columns = parts.slice(2).join(' '); // Join the rest of the parts as columns
-                  handleDrawCommand(file, columns);
-                } else {
-                  newOutput += "Invalid usage. Example: draw [file] [columns]";
-                }}
-                  else {
-                newOutput += "Invalid Command";
-              }
-          }
-          setOutput(newOutput)
-          if(input=== "clear"){
-            setOutput("")
-          }
-          setInput("")
-        }
-      }}
-      />
-     <input
-        ref={fileInputRef}
-        type="file"
-        style={{ display: "none" }}
-        onChange={handleFileUpload}
-      />
-    <div className="terminal">
-    {output}
-    </div>
-    </div>
+      <div className="App" onClick={() => inputRef.current.focus()}>
+      <div className="HeaderContainer">
+        <h1 className="Heading">Welcome to my Terminal.</h1>
+        <p className="SubHeading">Write "help" to check the supported commands.</p>
+      </div>
+        
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleInput();
+            }
+          }}
+        />
+        <input
+          ref={fileInputRef}
+          type="file"
+          style={{ display: "none" }}
+          onChange={handleFileUpload}
+        />
+        <div className="terminal">{output}</div>
+      </div>
+      <PopUp isOpen={isPopupOpen} onClose={closePopup} output2={output2} outputArray={outputArray}>
+        <h2>Popup Content</h2>
+        <p>This is the content of the popup.</p>
+      </PopUp>
 
     </>
-
-  )
+  );
 }

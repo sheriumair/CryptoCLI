@@ -19,6 +19,7 @@ func main() {
 	r.HandleFunc("/draw", handlers.HandleDrawCommand).Methods("GET")
 	r.HandleFunc("/fetch-price/{pair}", handlers.HandleFetchPriceCommand).Methods("GET")
 	r.HandleFunc("/upload", handlers.HandleUploadCommand).Methods("POST")
+	r.HandleFunc("/delete/{fileName}", handlers.HandleDeleteFile).Methods("DELETE")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"}, // You can specify allowed origins
