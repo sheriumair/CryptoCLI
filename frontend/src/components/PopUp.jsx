@@ -1,4 +1,4 @@
-import '../Popup.css';
+import '../popUp.css';
 import { ResponsiveContainer,LineChart,Line, XAxis,YAxis,Tooltip } from 'recharts';
 import PropTypes from 'prop-types';
 
