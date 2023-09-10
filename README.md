@@ -43,7 +43,7 @@ Before you begin, make sure you have the following installed:
 1. Navigate to the backend directory:
   
     ```shell
-  cd CryptoCLI/backend
+    cd CryptoCLI/backend
 
 2. Install Go dependencies:
     
@@ -54,5 +54,15 @@ Before you begin, make sure you have the following installed:
 
   ```shell  
   go build -o main .
+
+4. Navigate to the frontend directory:
+    ```shell
+   cd ../frontend
+
+5. Install frontend dependencies:
+
+  ```shell  
+   npm install
+    
 
 
