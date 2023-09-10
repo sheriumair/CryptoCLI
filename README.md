@@ -53,9 +53,11 @@ Before you begin, make sure you have the following installed:
 3. Build the backend:
 
   ```shell  
-  go build -o main .
+   go build -o main 
+
 
 4. Navigate to the frontend directory:
+
     ```shell
    cd ../frontend
 
