@@ -1,0 +1,14 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./backend  # Path to your backend code directory
+    ports:
+      - "8080:8080"  # Map the host port 8080 to the container port 8080
+
+  frontend:
+    build:
+      context: ./frontend  # Path to your frontend code directory
+    ports:
+      - "5173:5173"  # 
+

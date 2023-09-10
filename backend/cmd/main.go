@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	fmt.Println("Hello, WELCOME TO MY APPLICATOPN")
+	fmt.Println("Hello, WELCOME TO MY APPLICATION")
 	r := mux.NewRouter()
 
 	r.HandleFunc("/help", handlers.HandleHelpCommand).Methods("GET")
@@ -22,12 +22,11 @@ func main() {
 	r.HandleFunc("/delete/{fileName}", handlers.HandleDeleteFile).Methods("DELETE")
 
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"}, // You can specify allowed origins
+		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 	})
 
 	handler := c.Handler(r)
-
 	http.ListenAndServe(":8080", handler)
 }

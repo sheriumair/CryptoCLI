@@ -10,10 +10,6 @@ export default function App() {
   const [outputArray, setOutputArray] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const openPopup = () => {
-    setIsPopupOpen(true);
-  };
-
   const closePopup = () => {
     setIsPopupOpen(false);
   };
@@ -58,6 +54,7 @@ export default function App() {
         setOutput(response.data);
       })
       .catch((error) => {
+        console.log("The error is %s",error)
         setOutput("Error: Unable to upload file");
       });
   };
@@ -140,7 +137,7 @@ export default function App() {
       <div className="App" onClick={() => inputRef.current.focus()}>
       <div className="HeaderContainer">
         <h1 className="Heading">Welcome to my Terminal.</h1>
-        <p className="SubHeading">Write "help" to check the supported commands.</p>
+        <p className="SubHeading">Write &quot;help&quot; to check the supported commands.</p>
       </div>
         
         <input

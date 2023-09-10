@@ -8,10 +8,15 @@ import (
 	"strings"
 )
 
+/*
+*  Handles fetch endpoint functionality
+ */
+
 func HandleFetchPriceCommand(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	pair := parts[2]
 	price, err := fetchPrice(pair)
+	//Will throw an error if pair entered is incorrect
 	if err != nil {
 		http.Error(w, "Failed to fetch price as the pair entered is incorrect ", http.StatusBadRequest)
 		return
@@ -19,6 +24,7 @@ func HandleFetchPriceCommand(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Current price of %s is %s\n", pair, price)
 }
 
+// Pinging the Binance API
 func fetchPrice(pair string) (string, error) {
 	apiURL := fmt.Sprintf("https://api.binance.com/api/v3/avgPrice?symbol=%s", pair)
 	resp, err := http.Get(apiURL)

@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+/*
+*  Handles draw endpoint functionality
+ */
+
 func HandleDrawCommand(w http.ResponseWriter, r *http.Request) {
 	fileName := r.URL.Query().Get("file")
 	columnsParam := r.URL.Query().Get("columns")

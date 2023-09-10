@@ -1,6 +1,6 @@
-import React from 'react';
 import '../Popup.css';
 import { ResponsiveContainer,LineChart,Line, XAxis,YAxis,Tooltip } from 'recharts';
+import PropTypes from 'prop-types';
 
 const PopUp = ({ isOpen, onClose, output2,outputArray }) => {
   return isOpen ? (
@@ -17,11 +17,16 @@ const PopUp = ({ isOpen, onClose, output2,outputArray }) => {
           <Line dataKey={outputArray[1]} strok="red" activeDot={{r:8}}/>
           <Line dataKey={outputArray[0]} stroke="green"activeDot={{r:8}}/>
         </LineChart>
-
       </ResponsiveContainer>
       </div>
     </div>
   ) : null;
+};
+PopUp.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  output2: PropTypes.any.isRequired,
+  outputArray: PropTypes.array.isRequired,
 };
 
 export default PopUp;

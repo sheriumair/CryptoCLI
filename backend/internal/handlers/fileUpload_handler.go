@@ -7,6 +7,9 @@ import (
 	"os"
 )
 
+/*
+*  Handles upload endpoint functionality
+ */
 func HandleUploadCommand(w http.ResponseWriter, r *http.Request) {
 	file, fileHeader, err := r.FormFile("file")
 	if err != nil {
@@ -19,6 +22,7 @@ func HandleUploadCommand(w http.ResponseWriter, r *http.Request) {
 	filePath := "../uploads/" + originalFilename
 	uploadDir := "../uploads/"
 
+	//Will create a directory if doesnt exists
 	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
 		err := os.Mkdir(uploadDir, os.ModePerm)
 		if err != nil {
@@ -34,6 +38,7 @@ func HandleUploadCommand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer destinationFile.Close()
+
 	_, err = io.Copy(destinationFile, file)
 	if err != nil {
 		http.Error(w, "Failed to write file data", http.StatusInternalServerError)

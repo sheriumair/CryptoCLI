@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+/*
+*  Handles help endpoint functionality
+ */
+
 func HandleHelpCommand(w http.ResponseWriter, r *http.Request) {
 	helpText := "Available commands:\n"
 	helpText += "help - Displays a list of all available commands and briefly describes what they do.\n"
