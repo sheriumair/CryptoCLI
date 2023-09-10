@@ -9,9 +9,7 @@ CryptoCLI is a command-line interface (CLI) application for obtaining cryptocurr
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [Usage](#usage)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
+
 
 ## Features
 
@@ -40,31 +38,56 @@ Before you begin, make sure you have the following installed:
 
 
 ### Directions
-1. Navigate to the backend directory:
+1. Navigate to the CryptoCLI main repo:
   
     ```shell
-    cd CryptoCLI/backend
+    docker-compose up
 
-2. Install Go dependencies:
-    
-   ```shell
-   go mod download
+## Usuage
+CryptoCLI offers a set of commands to interact with cryptocurrency data. Here are some common commands and how to use them:
 
-3. Build the backend:
-
-  ```shell  
-   go build -o main 
-
-
-4. Navigate to the frontend directory:
+### About
+To get information about CryptoCLI, you can use the `about` command:
 
     ```shell
-   cd ../frontend
+    about
+     
 
-5. Install frontend dependencies:
+### Help
+If you need assistance with using CryptoCLI or want to see a list of available commands, you can use the help command:
 
-  ```shell  
-   npm install
+     ```shell
+     help
+
+
+### Fetching Crypto Prices
+You can fetch real-time cryptocurrency prices using the `fetch-price` command. Replace `PAIR` with the cryptocurrency pair you're interested in (e.g., `BTCUSDT`):
+   
+    ```shell
+    fetch-price PAIR
+
+
+### Uploading File
+To upload and analyze cryptocurrency data files, use the `upload` command. This command allows you to submit a file containing cryptocurrency data for further processing.
+
+     ```shell
+     $ upload
+
+### Drawing File Columns
+To create visual representations of cryptocurrency data, you can use the `draw` command. This command allows you to specify a file and columns to be plotted.
+
+     ```shell
+     $ draw [file] [columns]
+
+### Delete File
+
+     ```shell
+     $ delete [file] 
+
+
+
+
+
     
 
 
