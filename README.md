@@ -86,6 +86,15 @@ To create visual representations of cryptocurrency data, you can use the `draw` 
 
 
 
+## Testing
+For testing you can navigate to Backend repo and run the following command
+
+     ```shell
+     go test ./e2e
+
+
+
+
 
 
     
